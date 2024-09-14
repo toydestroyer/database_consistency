@@ -1,5 +1,23 @@
 # Changelog
 
+### [1.7.25] - 2024/08/24
+
+- Fix compatibility w/ active_type gem and handling anonymous classes. Thanks [ojab](https://github.com/ojab) for fixing this!
+- Improving CI. Thanks [ojab](https://github.com/ojab) for doing this!
+- Make all models methods ignore database disabled models. Thanks [Chedli Bourguiba](https://github.com/chaadow) for fixing it!
+
+### [1.7.24] - 2024/08/22
+
+- Fix DatabaseConsistencyCheckers/All setting
+- Make LengthConstraintChecker ignore Proc/Symbol settings
+- Handle lower() index in autofix migration writer
+
+Thanks [Alexander Sviridov](https://github.com/ql) for fixing all of this!
+
+### [1.7.23] - 2023/12/18
+
+- EnumValueChecker: Check enums in any order. Thanks [Sergey Toy](https://github.com/toydestroyer) for noticing and improving this!
+
 ### [1.7.22] - 2023/11/08
 
 - Adjust error file. Thanks [Andy Allan](https://github.com/gravitystorm) for reporting this!

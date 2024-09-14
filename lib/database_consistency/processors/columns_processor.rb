@@ -15,12 +15,9 @@ module DatabaseConsistency
 
       private
 
-      def check # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-        Helper.parent_models.flat_map do |model|
+      def check # rubocop:disable Metrics/MethodLength
+        Helper.parent_models(configuration).flat_map do |model|
           DebugContext.with(model: model.name) do
-            next unless configuration.enabled?('DatabaseConsistencyDatabases', Helper.database_name(model)) &&
-                        configuration.enabled?(model.name.to_s)
-
             model.columns.flat_map do |column|
               DebugContext.with(column: column.name) do
                 enabled_checkers.flat_map do |checker_class|

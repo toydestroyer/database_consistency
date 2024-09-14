@@ -3,6 +3,14 @@
 RSpec.describe DatabaseConsistency::Configuration, :sqlite, :mysql, :postgresql do
   subject(:configuration) { described_class.new(file_fixture(file_path)) }
 
+  shared_examples 'db settings' do |value, db_name = 'primary'|
+    context 'database' do
+      specify do
+        expect(configuration.database_enabled?(db_name)).to eq(value)
+      end
+    end
+  end
+
   shared_examples 'checker' do |value|
     context 'checker' do
       specify do
@@ -98,6 +106,7 @@ RSpec.describe DatabaseConsistency::Configuration, :sqlite, :mysql, :postgresql 
   context 'with all option enabled' do
     let(:file_path) { 'all_enabled.yml' }
 
+    include_examples 'db settings', true
     include_examples 'global checker', true
     include_examples 'model', true
     include_examples 'key', true
@@ -107,6 +116,7 @@ RSpec.describe DatabaseConsistency::Configuration, :sqlite, :mysql, :postgresql 
   context 'with all option disabled' do
     let(:file_path) { 'all_disabled.yml' }
 
+    include_examples 'db settings', true
     include_examples 'global checker', true
     include_examples 'model', false
     include_examples 'key', false
@@ -147,5 +157,11 @@ RSpec.describe DatabaseConsistency::Configuration, :sqlite, :mysql, :postgresql 
       expect(configuration).not_to be_enabled('User', 'data', 'MissingIndexChecker')
       expect(configuration).to be_enabled('User', 'code', 'NullConstraintChecker')
     end
+  end
+
+  context 'When secondary database is disabled' do
+    let(:file_path) { 'secondary_database_disabled.yml' }
+
+    include_examples 'db settings', false, 'secondary'
   end
 end

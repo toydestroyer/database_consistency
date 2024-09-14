@@ -29,17 +29,19 @@ module DatabaseConsistency
       end
     end
 
-    def project_models
+    def project_models(configuration)
       ActiveRecord::Base.descendants.select do |klass|
+        next unless configuration.model_enabled?(klass)
+
         project_klass?(klass) && connected?(klass)
       end
     end
 
     # Returns list of models to check
-    def models
-      project_models.select do |klass|
+    def models(configuration)
+      project_models(configuration).select do |klass|
         !klass.abstract_class? &&
-          klass.connection.table_exists?(klass.table_name) &&
+          klass.table_exists? &&
           !klass.name.include?('HABTM_')
       end
     end
@@ -52,8 +54,8 @@ module DatabaseConsistency
     end
 
     # Return list of not inherited models
-    def parent_models
-      models.group_by(&:table_name).each_value.flat_map do |models|
+    def parent_models(configuration)
+      models(configuration).group_by(&:table_name).each_value.flat_map do |models|
         models.reject { |model| models.include?(model.superclass) }
       end
     end
@@ -65,6 +67,8 @@ module DatabaseConsistency
       return true unless Module.respond_to?(:const_source_location) && defined?(Bundler)
 
       !Module.const_source_location(klass.to_s).first.to_s.include?(Bundler.bundle_path.to_s)
+    rescue NameError
+      false
     end
 
     # @return [Boolean]

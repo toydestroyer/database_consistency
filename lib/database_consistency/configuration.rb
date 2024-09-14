@@ -48,6 +48,16 @@ module DatabaseConsistency
       value
     end
 
+    def model_enabled?(model)
+      database_enabled?(Helper.database_name(model)) && enabled?(model.name.to_s)
+    end
+
+    def database_enabled?(name)
+      value = configuration.dig('DatabaseConsistencyDatabases', name, 'enabled')
+
+      value.nil? ? true : value
+    end
+
     private
 
     attr_reader :configuration

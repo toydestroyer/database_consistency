@@ -13,11 +13,8 @@ module DatabaseConsistency
       private
 
       def check # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-        Helper.parent_models.flat_map do |model|
+        Helper.parent_models(configuration).flat_map do |model|
           DebugContext.with(model: model.name) do
-            next unless configuration.enabled?('DatabaseConsistencyDatabases', Helper.database_name(model)) &&
-                        configuration.enabled?(model.name.to_s)
-
             indexes = model.connection.indexes(model.table_name)
 
             indexes.flat_map do |index|
